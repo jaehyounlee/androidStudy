@@ -1,6 +1,7 @@
 package com.example.ijaehyeon.myapplication;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,12 +53,12 @@ public class ListViewAdater extends BaseAdapter {
 
         ListViewItem listViewItem = listViewItemList.get(position);
 
-        imgView.setImageDrawable(listViewItem.getImg());
+        imgView.setImageBitmap(listViewItem.getImg());
 
         return convertView;
     }
 
-    public void addItem(Drawable img){
+    public void addItem(Bitmap img){
         ListViewItem item = new ListViewItem();
         item.setImg(img);
 

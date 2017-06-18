@@ -1,5 +1,6 @@
 package com.example.ijaehyeon.myapplication;
 
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
 /**
@@ -7,12 +8,12 @@ import android.graphics.drawable.Drawable;
  */
 
 public class ListViewItem {
-    private Drawable img;
+    private Bitmap img;
 
-    public void setImg(Drawable image) {
+    public void setImg(Bitmap image) {
         img = image;
     }
-    public Drawable getImg(){
+    public Bitmap getImg(){
         return img;
     }
 }
