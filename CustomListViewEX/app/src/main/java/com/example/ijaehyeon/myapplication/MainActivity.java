@@ -29,99 +29,26 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
     ListView listview;
     ListViewAdater adater;
+    final String  PAGRURL = "http://www.gettyimagesgallery.com/collections/archive/slim-aarons.aspx";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
-        new HtmlContent().execute("http://www.gettyimagesgallery.com/collections/archive/slim-aarons.aspx");
-
-        adater = new ListViewAdater();
-
         listview = (ListView)findViewById(R.id.lv1);
+        adater = new ListViewAdater();
         listview.setAdapter(adater);
+
+        ImageLoader loader = new ImageLoader(PAGRURL, listview, adater);
+        loader.execute();
+
+
 
 
 //        adater.addItem(ContextCompat.getDrawable(this, image_urls.get(0)));
 //        adater.addItem(ContextCompat.getDrawable(this, R.drawable.ico_android));
 
 
-    }
-    private class HtmlContent extends AsyncTask {
-        URLConnection conntion = null;
-
-        public ArrayList getContent(String strurl) throws MalformedURLException {
-            Bitmap bitmap;
-            ArrayList<URL> urls = new ArrayList<URL>();
-
-            try {
-                Document doc = Jsoup.connect(strurl).get();
-                int count = 0;
-                for(Element images : doc.select("img")){
-                    String imageStr = images.attr("src");
-                    URL full_url = new URL("http://www.gettyimagesgallery.com" + images.attr("src"));
-                    System.out.println(imageStr);
-                    if(!imageStr.substring(0,1).equals("/"))
-                        continue;
-                    if(count ==10)
-                        break;
-
-                    urls.add(full_url);
-                    count++;
-                };
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return urls;
-        }
-
-        @Override
-        protected Object doInBackground(Object[] params) {
-            try {
-                return getContent((String)params[0]);
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-                return "fail";
-            }
-        }
-
-        @Override
-        protected void onPostExecute(final Object urls) {
-            Thread mThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    for(URL url : (ArrayList<URL>)urls) {
-                        Bitmap bitmap ;
-                        try{
-                            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                            conn.setDoInput(true);
-                            conn.connect();
-
-                            InputStream is = conn.getInputStream();
-                            bitmap = null;
-                            bitmap = BitmapFactory.decodeStream(is);
-
-                            adater.addItem(bitmap);
-                            adater.notifyDataSetChanged();
-                        } catch(Exception e){
-                            e.printStackTrace();
-                        }
-
-                    }
-                }
-            });
-
-        }
-    }
-    private class SetImageHandler extends Handler{
-        @Override
-        public void handleMessage(Message msg) {
-
-
-        }
     }
 }
 
