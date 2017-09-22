@@ -11,6 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ListView;
 
+import com.example.MyClass;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -39,11 +41,11 @@ public class MainActivity extends AppCompatActivity {
         adater = new ListViewAdater();
         listview.setAdapter(adater);
 
+        MyClass myclass = new MyClass();
+        myclass.sayHello();
+
         ImageLoader loader = new ImageLoader(PAGRURL, listview, adater);
         loader.execute();
-
-
-
 
 //        adater.addItem(ContextCompat.getDrawable(this, image_urls.get(0)));
 //        adater.addItem(ContextCompat.getDrawable(this, R.drawable.ico_android));
