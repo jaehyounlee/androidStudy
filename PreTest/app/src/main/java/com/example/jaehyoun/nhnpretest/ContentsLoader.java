@@ -60,6 +60,7 @@ class ContentsLoader extends AsyncTask{
 
             String title = (String) jsonObject.get("title");
             String contents = jsonObject.getString("extract_html");
+            contents = contents.replaceAll("<p>|</p>|<b>|</b>","");
 
             ContentsValues value = new ContentsValues(title, contents);
 
@@ -105,6 +106,7 @@ class ContentsLoader extends AsyncTask{
 
                 title = (String) json.get("title");
                 contents = json.getString("extract_html");
+                contents = contents.replaceAll("<p>|</p>|<b>|</b>","");
 
                 relatedValue = new ContentsValues(title, contents);
 

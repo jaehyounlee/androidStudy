@@ -3,6 +3,7 @@ package com.example.jaehyoun.nhnpretest;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.widget.ContentLoadingProgressBar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ public class PreTestMainActivity extends AppCompatActivity{
     EditText search_view;
     Button search_btn;
     ListView listView;
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
     ArrayList<ContentsValues> releateValueList = new ArrayList<ContentsValues>();
 
@@ -34,6 +36,7 @@ public class PreTestMainActivity extends AppCompatActivity{
         search_view = (EditText) findViewById(R.id.search_edit);
         search_btn = (Button) findViewById(R.id.search_btn);
         listView = (ListView) findViewById(R.id.search_result_listview);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.search_result_swipe_refresh_layout);
 
         final RelatedListAdapter adapter = new RelatedListAdapter(releateValueList);
         listView.setAdapter(adapter);
@@ -43,17 +46,29 @@ public class PreTestMainActivity extends AppCompatActivity{
         listView.addHeaderView(header);
 
 
+
         search_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String keyword = search_view.getText().toString();
-
                 ContentsLoader loader = new ContentsLoader(header,releateValueList,adapter);
+                String keyword = search_view.getText().toString();
 
                 loader.execute(keyword);
 
                 InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(search_view.getWindowToken(),0);
+
+            }
+        });
+
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                ContentsLoader loader = new ContentsLoader(header,releateValueList,adapter);
+                String keyword = search_view.getText().toString();
+
+                loader.execute(keyword);
+                mSwipeRefreshLayout.setRefreshing(false);
 
             }
         });
