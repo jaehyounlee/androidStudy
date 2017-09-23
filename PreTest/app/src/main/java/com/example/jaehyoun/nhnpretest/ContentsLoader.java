@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.ConnectionConfgure;
 import com.example.HttpConnector;
 
 import org.json.JSONArray;
@@ -47,22 +48,27 @@ class ContentsLoader extends AsyncTask{
     protected Object doInBackground(Object[] params) {
 
         String keyWord = params[0].toString(); // 키워드가 넘어온다.
-
         HttpConnector connector = new HttpConnector();
-
+        ConnectionConfgure conf = new ConnectionConfgure();
         try {
-            connector.setTargetUrl(SUMMARY_URL + keyWord);
-            connector.setMethod("GET");
-            String response = connector.openConnenction(); // Json타입으로 응답값이 넘어온다
+            conf.setTargetUrl(SUMMARY_URL + keyWord);
+            conf.setMethod("GET");
+            String response = connector.openConnenction(conf); // Json형식으로 응답값이 넘어온다 (default-json)
             System.out.println("datas : " + response);
+            ContentsValues value = null;
+            JSONObject jsonObject = null;
 
-            JSONObject jsonObject = new JSONObject(response);
+            if(conf.getResponseDataType().equals(conf.JSON)) {
+                jsonObject = new JSONObject(response);
 
-            String title = (String) jsonObject.get("title");
-            String contents = jsonObject.getString("extract_html");
-            contents = contents.replaceAll("<p>|</p>|<b>|</b>","");
+                String title = (String) jsonObject.get("title");
+                String contents = jsonObject.getString("extract_html");
+                contents = contents.replaceAll("<p>|</p>|<b>|</b>","");
 
-            ContentsValues value = new ContentsValues(title, contents);
+                value = new ContentsValues(title, contents);
+            }else if(conf.getMethod().equals(conf.XML)){
+
+            }
 
             JSONObject thumbnail;
             if (!jsonObject.isNull("thumbnail")) { // 썸네이링 있는경우 가져와서 bitmap 생성
@@ -89,51 +95,54 @@ class ContentsLoader extends AsyncTask{
 
             /* -------------- List Header ----------------- */
 
-            connector.setTargetUrl(RELATED_URL + keyWord);
-            connector.setMethod("GET");
-            response = connector.openConnenction(); // Json타입으로 응답값이 넘어온다
+            conf.setTargetUrl(RELATED_URL + keyWord);
+            conf.setMethod("GET");
+            response = connector.openConnenction(conf); // Json타입으로 응답값이 넘어온다
             System.out.println("datas : " + response);
-
-            jsonObject = new JSONObject(response);
-            JSONArray ja = jsonObject.getJSONArray("pages"); // related data들을 Array 로 가져온다
-
             ContentsValues relatedValue;
 
-            for(int i = 0 ; i < ja.length(); i ++) {
-                JSONObject json = ja.getJSONObject(i);
-                System.out.println("Json from JsonArray [" + i + "] : " + json);
+            if(conf.getResponseDataType().equals(conf.JSON)) {
+                jsonObject = new JSONObject(response);
+                JSONArray ja = jsonObject.getJSONArray("pages"); // related data들을 Array 로 가져온다
+
+                for(int i = 0 ; i < ja.length(); i ++) {
+                    JSONObject json = ja.getJSONObject(i);
+                    System.out.println("Json from JsonArray [" + i + "] : " + json);
 
 
-                title = (String) json.get("title");
-                contents = json.getString("extract_html");
-                contents = contents.replaceAll("<p>|</p>|<b>|</b>","");
+                    String  title = (String) json.get("title");
+                    String  contents = json.getString("extract_html");
+                    contents = contents.replaceAll("<p>|</p>|<b>|</b>","");
 
-                relatedValue = new ContentsValues(title, contents);
+                    relatedValue = new ContentsValues(title, contents);
 
-                thumbnail = null;
-                if (!json.isNull("thumbnail")) { // 썸네이일 있는경우 가져와서 bitmap 생성
-                    thumbnail = json.getJSONObject("thumbnail");
-                    int width = Integer.parseInt(thumbnail.getString("width"));
-                    int height = Integer.parseInt(thumbnail.getString("height"));
+                    thumbnail = null;
+                    if (!json.isNull("thumbnail")) { // 썸네이일 있는경우 가져와서 bitmap 생성
+                        thumbnail = json.getJSONObject("thumbnail");
+                        int width = Integer.parseInt(thumbnail.getString("width"));
+                        int height = Integer.parseInt(thumbnail.getString("height"));
 
-                    String thumbnail_src = thumbnail.getString("source");
-                    URL thumbnail_URL = new URL(thumbnail_src);
-                    HttpURLConnection conn = (HttpURLConnection) thumbnail_URL.openConnection();
-                    conn.setDoInput(true);
-                    conn.connect();
+                        String thumbnail_src = thumbnail.getString("source");
+                        URL thumbnail_URL = new URL(thumbnail_src);
+                        HttpURLConnection conn = (HttpURLConnection) thumbnail_URL.openConnection();
+                        conn.setDoInput(true);
+                        conn.connect();
 
-                    InputStream is = conn.getInputStream();
-                    Bitmap bitmap = null;
-                    bitmap = BitmapFactory.decodeStream(is, null, null);
+                        InputStream is = conn.getInputStream();
+                        Bitmap bitmap = null;
+                        bitmap = BitmapFactory.decodeStream(is, null, null);
 
-                    relatedValue.setThumbnail(bitmap);
-                    relatedValue.setThumbnail_width(width);
-                    relatedValue.setThumbnnail_height(height);
+                        relatedValue.setThumbnail(bitmap);
+                        relatedValue.setThumbnail_width(width);
+                        relatedValue.setThumbnnail_height(height);
 
-                    System.out.println(thumbnail.toString());
+                        System.out.println(thumbnail.toString());
 
+                    }
+                    releatedValueList.add(relatedValue);
                 }
-                releatedValueList.add(relatedValue);
+            } else if(conf.getResponseDataType().equals(conf.XML)) {
+
             }
 
             return value;

@@ -8,51 +8,27 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.Buffer;
+import java.util.HashMap;
+import java.util.Iterator;
 
 public class HttpConnector {
 
-    private String method ="";
-    private String targetUrl ="";
-    private int connectionTimeout = 3000;
-    private int ReadTimeout = 3000;
+    private HttpURLConnection setConfigure(ConnectionConfgure conf) throws Exception{
+        URL url = new URL(conf.getTargetUrl());
+        HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+        conn.setRequestMethod(conf.getMethod());
+        conn.setRequestProperty("Accept", conf.getResponseDataType());
+        conn.setRequestProperty("Content-Type", conf.getRequestBodyType());
+        conn.setConnectTimeout(conf.getConnectionTimeout());
+        conn.setReadTimeout(conf.getReadTimeout());
 
-    public String getMethod() {
-        return method;
+        return conn;
     }
 
-    public void setMethod(String method) {
-        this.method = method;
-    }
-
-    public void setTargetUrl(String targetUrl) {
-        this.targetUrl = targetUrl;
-    }
-
-    public void setConnectionTimeout(int connectionTimeout) {
-        this.connectionTimeout = connectionTimeout;
-    }
-
-    public void setReadTimeout(int readTimeout) {
-        ReadTimeout = readTimeout;
-    }
-
-    public String getTargetUrl() {
-        return targetUrl;
-    }
-
-    public int getConnectionTimeout() {
-        return connectionTimeout;
-    }
-
-    public int getReadTimeout() {
-        return ReadTimeout;
-    }
-
-    public String openConnenction(){
+    public String openConnenction(ConnectionConfgure conf){
         try {
-            URL url = new URL(targetUrl);
-            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-            conn.setRequestMethod(method);
+            HttpURLConnection conn = setConfigure(conf);
+
             int resultCode = conn.getResponseCode();
             if(resultCode == conn.HTTP_OK) {
 
@@ -73,6 +49,8 @@ public class HttpConnector {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return "";

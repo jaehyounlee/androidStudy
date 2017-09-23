@@ -12,8 +12,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.example.HttpConnector;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
