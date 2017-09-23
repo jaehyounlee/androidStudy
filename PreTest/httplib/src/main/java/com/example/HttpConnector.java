@@ -55,17 +55,20 @@ public class HttpConnector {
             conn.setRequestMethod(method);
             int resultCode = conn.getResponseCode();
             if(resultCode == conn.HTTP_OK) {
+
                 InputStreamReader isr = new InputStreamReader(conn.getInputStream(), "UTF-8");
                 BufferedReader br = new BufferedReader(isr);
 
-                String line = "";
+                String line;
                 StringBuffer sb = new StringBuffer();
+                System.out.println("--------start---------\n\n\n");
                 while((line = br.readLine())!=null) {
                     sb.append(line).append("\r\n");
                 }
                 System.out.println(sb.toString());
                 isr.close();
                 br.close();
+                return sb.toString();
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();
