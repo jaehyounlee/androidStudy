@@ -93,8 +93,10 @@ public class ImageLoader extends AsyncTask{
                     conn.connect();
 
                     InputStream is = conn.getInputStream();
+                    BitmapFactory.Options option = new BitmapFactory.Options();
+                    option.inSampleSize = 4;
                     bitmap = null;
-                    bitmap = BitmapFactory.decodeStream(is);
+                    bitmap = BitmapFactory.decodeStream(is, null, option);
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
