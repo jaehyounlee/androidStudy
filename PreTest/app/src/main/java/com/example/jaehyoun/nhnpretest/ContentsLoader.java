@@ -2,9 +2,11 @@ package com.example.jaehyoun.nhnpretest;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.inputmethodservice.InputMethodService;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -21,23 +23,23 @@ import java.util.ArrayList;
 
 /**
  * Created by ijaehyeon on 2017. 6. 18..
+ * Thumbnail, title, contents를 받아서 생성해주는 로더
  */
 
-public class ContentsLoader extends AsyncTask{
+class ContentsLoader extends AsyncTask{
 
-    public static String CONTENTS_SUMMARY = "summary";
-    public static String CONTENTS_RELATED = "related";
 
     final private String SUMMARY_URL = "https://en.wikipedia.org/api/rest_v1/page/summary/";
     final private String RELATED_URL = "https://en.wikipedia.org/api/rest_v1/page/related/";
 
-    String value_gb;
-    View mView;
-    ListView mListView;
+    private View mView;
+    private ArrayList<ContentsValues> releatedValueList;
+    RelatedListAdapter mAdapter;
 
-    public ContentsLoader(View headerView, ListView listView) {
-        this.mView = headerView;
-        this.mListView = listView;
+    ContentsLoader(View header, ArrayList<ContentsValues> releateValueList, RelatedListAdapter adapter) {
+        this.mView = header;
+        this.releatedValueList = releateValueList;
+        this.mAdapter = adapter;
     }
 
 
@@ -47,7 +49,7 @@ public class ContentsLoader extends AsyncTask{
         String keyWord = params[0].toString(); // 키워드가 넘어온다.
 
         HttpConnector connector = new HttpConnector();
-        ArrayList<ContentsValues> values = new ArrayList<ContentsValues>();
+
         try {
             connector.setTargetUrl(SUMMARY_URL + keyWord);
             connector.setMethod("GET");
@@ -61,7 +63,7 @@ public class ContentsLoader extends AsyncTask{
 
             ContentsValues value = new ContentsValues(title, contents);
 
-            JSONObject thumbnail = null;
+            JSONObject thumbnail;
             if (!jsonObject.isNull("thumbnail")) { // 썸네이링 있는경우 가져와서 bitmap 생성
                 thumbnail = jsonObject.getJSONObject("thumbnail");
                 int width = Integer.parseInt(thumbnail.getString("width"));
@@ -74,8 +76,7 @@ public class ContentsLoader extends AsyncTask{
                 conn.connect();
 
                 InputStream is = conn.getInputStream();
-                Bitmap bitmap = null;
-                bitmap = BitmapFactory.decodeStream(is, null, null);
+                Bitmap bitmap = BitmapFactory.decodeStream(is, null, null);
 
                 value.setThumbnail(bitmap);
                 value.setThumbnail_width(width);
@@ -84,7 +85,8 @@ public class ContentsLoader extends AsyncTask{
 
                 System.out.println(thumbnail.toString());
             }
-            values.add(value);
+
+            /* -------------- List Header ----------------- */
 
             connector.setTargetUrl(RELATED_URL + keyWord);
             connector.setMethod("GET");
@@ -92,41 +94,47 @@ public class ContentsLoader extends AsyncTask{
             System.out.println("datas : " + response);
 
             jsonObject = new JSONObject(response);
-            JSONArray ja = jsonObject.getJSONArray("pages");
+            JSONArray ja = jsonObject.getJSONArray("pages"); // related data들을 Array 로 가져온다
+
+            ContentsValues relatedValue;
+
+            for(int i = 0 ; i < ja.length(); i ++) {
+                JSONObject json = ja.getJSONObject(i);
+                System.out.println("Json from JsonArray [" + i + "] : " + json);
 
 
-            title = (String) jsonObject.get("title");
-            contents = jsonObject.getString("extract_html");
+                title = (String) json.get("title");
+                contents = json.getString("extract_html");
 
-            value = new ContentsValues(title, contents);
+                relatedValue = new ContentsValues(title, contents);
 
-            thumbnail = null;
-            if (!jsonObject.isNull("thumbnail")) { // 썸네이일 있는경우 가져와서 bitmap 생성
-                thumbnail = jsonObject.getJSONObject("thumbnail");
-                int width = Integer.parseInt(thumbnail.getString("width"));
-                int height = Integer.parseInt(thumbnail.getString("height"));
+                thumbnail = null;
+                if (!json.isNull("thumbnail")) { // 썸네이일 있는경우 가져와서 bitmap 생성
+                    thumbnail = json.getJSONObject("thumbnail");
+                    int width = Integer.parseInt(thumbnail.getString("width"));
+                    int height = Integer.parseInt(thumbnail.getString("height"));
 
-                String thumbnail_src = thumbnail.getString("source");
-                URL thumbnail_URL = new URL(thumbnail_src);
-                HttpURLConnection conn = (HttpURLConnection) thumbnail_URL.openConnection();
-                conn.setDoInput(true);
-                conn.connect();
+                    String thumbnail_src = thumbnail.getString("source");
+                    URL thumbnail_URL = new URL(thumbnail_src);
+                    HttpURLConnection conn = (HttpURLConnection) thumbnail_URL.openConnection();
+                    conn.setDoInput(true);
+                    conn.connect();
 
-                InputStream is = conn.getInputStream();
-                Bitmap bitmap = null;
-                bitmap = BitmapFactory.decodeStream(is, null, null);
+                    InputStream is = conn.getInputStream();
+                    Bitmap bitmap = null;
+                    bitmap = BitmapFactory.decodeStream(is, null, null);
 
-                value.setThumbnail(bitmap);
-                value.setThumbnail_width(width);
-                value.setThumbnnail_height(height);
+                    relatedValue.setThumbnail(bitmap);
+                    relatedValue.setThumbnail_width(width);
+                    relatedValue.setThumbnnail_height(height);
 
+                    System.out.println(thumbnail.toString());
 
-                System.out.println(thumbnail.toString());
+                }
+                releatedValueList.add(relatedValue);
             }
 
-
-
-            return values;
+            return value;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -135,7 +143,7 @@ public class ContentsLoader extends AsyncTask{
 
     @Override
     protected void onPostExecute(Object o) {
-        ContentsValues value = (ContentsValues)o;
+        ContentsValues value = (ContentsValues) o;
         ImageView summaryImage = (ImageView) mView.findViewById(R.id.header_image);
         TextView display = (TextView) mView.findViewById(R.id.display_title);
         TextView contents = (TextView) mView.findViewById(R.id.header_contents);
@@ -145,6 +153,10 @@ public class ContentsLoader extends AsyncTask{
         }
         display.setText(value.getTitie());
         contents.setText(value.getContents());
+        //--------------list Header------
+
+        mAdapter.notifyDataSetChanged();
+
 
     }
 }
