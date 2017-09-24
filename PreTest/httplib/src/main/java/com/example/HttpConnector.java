@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -22,6 +23,13 @@ public class HttpConnector {
         conn.setConnectTimeout(conf.getConnectionTimeout());
         conn.setReadTimeout(conf.getReadTimeout());
 
+        if(conf.getMethod().equals(ConnectionConfgure.METHOD_POST) && conf.getBody() !=null) {
+            OutputStream os = conn.getOutputStream();
+            os.write(conf.getBody().getBytes("UTF-8"));
+            os.flush();
+            os.close();
+        }
+
         return conn;
     }
 
@@ -32,17 +40,14 @@ public class HttpConnector {
             int resultCode = conn.getResponseCode();
             if(resultCode == conn.HTTP_OK) {
 
-                InputStreamReader isr = new InputStreamReader(conn.getInputStream(), "UTF-8");
-                BufferedReader br = new BufferedReader(isr);
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
 
                 String line;
                 StringBuffer sb = new StringBuffer();
-                System.out.println("--------start---------\n\n\n");
                 while((line = br.readLine())!=null) {
                     sb.append(line).append("\r\n");
                 }
                 System.out.println(sb.toString());
-                isr.close();
                 br.close();
                 return sb.toString();
             }

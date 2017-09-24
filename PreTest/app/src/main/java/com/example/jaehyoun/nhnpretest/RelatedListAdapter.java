@@ -10,11 +10,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-/**
- * Created by ijaehyeon on 2017. 9. 23..
- */
-
-
 public class RelatedListAdapter extends BaseAdapter {
 
     ArrayList<ContentsValues> mArrayList;

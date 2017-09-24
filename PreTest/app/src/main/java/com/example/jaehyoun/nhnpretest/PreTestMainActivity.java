@@ -28,7 +28,6 @@ public class PreTestMainActivity extends AppCompatActivity{
     ArrayList<ContentsValues> releateValueList = new ArrayList<ContentsValues>();
     RelatedListAdapter mAdapter;
     View header;
-    String keyword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

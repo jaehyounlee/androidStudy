@@ -12,13 +12,28 @@ public class ConnectionConfgure {
     public static final String XML = "application/xml";
     public static final String TEXT_HTML = "text/html";
 
+    public static final String METHOD_GET = "GET";
+    public static final String METHOD_POST ="POST";
+    public static final String METHOD_DELETE = "DELETE";
+    public static final String METHOD_PUT = "PUT";
 
-    private String method ="";
-    private String targetUrl ="";
+
+    private String method =null;
+    private String targetUrl =null;
     private int connectionTimeout = 3000;
     private int readTimeout = 3000;
     private String responseDataType = "application/json"; //default json
     private String requestBodyType = "text/html"; // default text/html
+    private String body = null;
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+
+    }
 
     public String getMethod() {
         return method;

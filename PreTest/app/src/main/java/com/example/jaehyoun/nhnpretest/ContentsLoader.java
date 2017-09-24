@@ -99,14 +99,18 @@ class ContentsLoader extends AsyncTask{
 
         ContentsValues value = new ContentsValues(title, removeTags(contents));
 
-        if (json.has("thumbnail")) { // 썸네이일 있는경우 가져와서 bitmap 생성
-            JSONObject thumbnail = json.getJSONObject("thumbnail");
-
-            value.setThumbnail_URl(thumbnail.getString("source"));
-            value.setThumbnail_width(Integer.parseInt(thumbnail.getString("width")));
-            value.setThumbnnail_height(Integer.parseInt(thumbnail.getString("height")));
+        if (json.has("thumbnail")) {
+            setThumnailData(json, value);
         }
         return value;
+    }
+
+    private void setThumnailData(JSONObject json, ContentsValues value) throws JSONException {
+        JSONObject thumbnail = json.getJSONObject("thumbnail");
+
+        value.setThumbnail_URl(thumbnail.getString("source"));
+        value.setThumbnail_width(Integer.parseInt(thumbnail.getString("width")));
+        value.setThumbnnail_height(Integer.parseInt(thumbnail.getString("height")));
     }
 
     private String removeTags(String contents) {
