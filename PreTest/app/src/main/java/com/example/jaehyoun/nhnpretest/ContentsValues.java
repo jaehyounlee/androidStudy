@@ -12,8 +12,19 @@ public class ContentsValues {
 
     Bitmap thumbnail;
 
+
+    String thumbnail_URl;
+
     int thumbnail_width;
     int thumbnnail_height;
+
+    public String getThumbnail_URl() {
+        return thumbnail_URl;
+    }
+
+    public void setThumbnail_URl(String thumbnail_URl) {
+        this.thumbnail_URl = thumbnail_URl;
+    }
 
     public ContentsValues(String titie, String contents) {
         this.titie = titie;

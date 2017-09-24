@@ -10,12 +10,16 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 public class PreTestMainActivity extends AppCompatActivity{
 
@@ -25,6 +29,8 @@ public class PreTestMainActivity extends AppCompatActivity{
     SwipeRefreshLayout mSwipeRefreshLayout;
 
     ArrayList<ContentsValues> releateValueList = new ArrayList<ContentsValues>();
+    RelatedListAdapter mAdapter;
+    View header;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,25 +42,20 @@ public class PreTestMainActivity extends AppCompatActivity{
         listView = (ListView) findViewById(R.id.search_result_listview);
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.search_result_swipe_refresh_layout);
 
-        final RelatedListAdapter adapter = new RelatedListAdapter(releateValueList);
-        listView.setAdapter(adapter);
+        mAdapter = new RelatedListAdapter(releateValueList);
+        listView.setAdapter(mAdapter);
 
-        final View header = getLayoutInflater().inflate(R.layout.listview_header,null,false);
+        header = getLayoutInflater().inflate(R.layout.listview_header,null,false);
 
         listView.addHeaderView(header);
-
-
 
         search_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ContentsLoader loader = new ContentsLoader(header,releateValueList,adapter);
                 String keyword = search_view.getText().toString();
 
-                loader.execute(keyword);
-
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(search_view.getWindowToken(),0);
+                loadHeaderData(keyword);
+                loadListData(keyword);
 
             }
         });
@@ -62,15 +63,50 @@ public class PreTestMainActivity extends AppCompatActivity{
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                ContentsLoader loader = new ContentsLoader(header,releateValueList,adapter);
-                String keyword = search_view.getText().toString();
-
-                loader.execute(keyword);
-                mSwipeRefreshLayout.setRefreshing(false);
 
             }
         });
     }
 
+    private void loadHeaderData(String keyword) {
+        ContentsLoader headerLoader = new ContentsLoader(keyword,ContentsLoader.TYPE_SUMMARY);
+
+        headerLoader.setLoaderCallBack(new ContentsLoader.LoaderCallBack() {
+            @Override
+            public void onLoadFinish(ArrayList<ContentsValues> values) {
+                ImageView summaryImage = (ImageView) header.findViewById(R.id.header_image);
+                TextView display = (TextView) header.findViewById(R.id.display_title);
+                TextView contents = (TextView) header.findViewById(R.id.header_contents);
+
+                if(values.size() !=0) {
+                    ContentsValues value = values.get(0);
+
+                    if(value.getThumbnail() !=null) {
+                        summaryImage.setImageBitmap(value.getThumbnail());
+                    }
+                    display.setText(value.getTitie());
+                    contents.setText(value.getContents());
+                }
+            }
+        });
+        headerLoader.execute(keyword);
+    }
+
+    private void loadListData(String keyword) {
+        ContentsLoader listLoader = new ContentsLoader(keyword, ContentsLoader.TYPE_RELATED);
+        listLoader.setLoaderCallBack(new ContentsLoader.LoaderCallBack() {
+            @Override
+            public void onLoadFinish(ArrayList<ContentsValues> values) {
+                releateValueList.clear();
+                releateValueList.addAll(values);
+                mAdapter.notifyDataSetChanged();
+
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(search_view.getWindowToken(),0);
+            }
+        });
+
+        listLoader.execute(keyword);
+    }
 }
 
