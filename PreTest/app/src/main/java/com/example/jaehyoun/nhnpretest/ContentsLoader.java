@@ -121,16 +121,3 @@ class ContentsLoader extends AsyncTask{
         void onLoadFinish(ArrayList<ContentsValues> values);
     }
 }
-/*
-   URL thumbnail_URL = new URL(thumbnail_src);
-                    HttpURLConnection conn = (HttpURLConnection) thumbnail_URL.openConnection();
-                    conn.setDoInput(true);
-                    conn.connect();
-
-                    InputStream is = conn.getInputStream();
-                    Bitmap bitmap = BitmapFactory.decodeStream(is, null, null);
-
-                    value.setThumbnail(bitmap);
-                    value.setThumbnail_width(width);
-                    value.setThumbnnail_height(height);
- */

@@ -19,6 +19,14 @@ public class RelatedListAdapter extends BaseAdapter {
 
     ArrayList<ContentsValues> mArrayList;
 
+
+    ListItemClickListener clickListener;
+
+    public void setClickListener(ListItemClickListener clickListener) {
+        this.clickListener = clickListener;
+    }
+
+
     public RelatedListAdapter(ArrayList<ContentsValues> datas) {
         this.mArrayList = datas;
     }
@@ -55,10 +63,23 @@ public class RelatedListAdapter extends BaseAdapter {
 
         ContentsValues listViewItem = mArrayList.get(position);
 
-        imgView.setImageBitmap(listViewItem.getThumbnail());
         related_title.setText(listViewItem.getTitie());
         related_contents.setText(listViewItem.getContents());
 
+        new ImageLoader(listViewItem.getThumbnail_URl(), imgView).execute();
+        convertView.setTag(listViewItem.getTitie());
+
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickListener.onItemClick((String)v.getTag());
+            }
+        });
+
         return convertView;
+    }
+
+    interface ListItemClickListener{
+        void onItemClick(String keyword);
     }
 }
