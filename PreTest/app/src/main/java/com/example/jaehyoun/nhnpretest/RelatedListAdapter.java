@@ -14,14 +14,6 @@ public class RelatedListAdapter extends BaseAdapter {
 
     ArrayList<ContentsValues> mArrayList;
 
-
-    ListItemClickListener clickListener;
-
-    public void setClickListener(ListItemClickListener clickListener) {
-        this.clickListener = clickListener;
-    }
-
-
     public RelatedListAdapter(ArrayList<ContentsValues> datas) {
         this.mArrayList = datas;
     }
@@ -43,38 +35,34 @@ public class RelatedListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        final int pos = position;
         final Context context = parent.getContext();
+        RelatedListItemHolder viewHolder;
 
         if(convertView == null){
             LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.list_item, parent, false);
+
+            viewHolder = new RelatedListItemHolder();
+            viewHolder.thumbnail = (ImageView)convertView.findViewById(R.id.related_thumbnail);
+            viewHolder.title = (TextView) convertView.findViewById(R.id.related_title);;
+            viewHolder.content = (TextView) convertView.findViewById(R.id.releated_contents);
+
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (RelatedListItemHolder) convertView.getTag();
         }
 
-        ImageView imgView = (ImageView)convertView.findViewById(R.id.related_thumbnail);
-        TextView related_title = (TextView) convertView.findViewById(R.id.related_title);
-        TextView related_contents = (TextView) convertView.findViewById(R.id.releated_contents);
-
-
         ContentsValues listViewItem = mArrayList.get(position);
-
-        related_title.setText(listViewItem.getTitie());
-        related_contents.setText(listViewItem.getContents());
-
-        new ImageLoader(listViewItem.getThumbnail_URl(), imgView).execute();
-        convertView.setTag(listViewItem.getTitie());
-
-        convertView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickListener.onItemClick((String)v.getTag());
-            }
-        });
-
+        if(listViewItem !=null) {
+            viewHolder.title.setText(listViewItem.getTitie());
+            viewHolder.content.setText(listViewItem.getContents());
+            new ImageLoader(listViewItem.getThumbnail_URl(), viewHolder.thumbnail).execute();
+        }
         return convertView;
     }
-
-    interface ListItemClickListener{
-        void onItemClick(String keyword);
+    class RelatedListItemHolder {
+        public ImageView thumbnail;
+        public TextView title;
+        public TextView content;
     }
 }

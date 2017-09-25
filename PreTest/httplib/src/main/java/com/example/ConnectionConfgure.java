@@ -25,6 +25,14 @@ public class ConnectionConfgure {
     private String responseDataType = "application/json"; //default json
     private String requestBodyType = "text/html"; // default text/html
     private String body = null;
+    private boolean isSSL = false; // default
+
+    public void setSSL(boolean SSL) {
+        isSSL = SSL;
+    }
+    public boolean isSSL() {
+        return isSSL;
+    }
 
     public String getBody() {
         return body;

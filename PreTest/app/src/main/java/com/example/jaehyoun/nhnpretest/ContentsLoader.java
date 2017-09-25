@@ -62,6 +62,7 @@ class ContentsLoader extends AsyncTask{
 
         conf.setTargetUrl(getBaseURL() + keyWord);
         conf.setMethod("GET");
+        conf.setSSL(true);
         String response = connector.openConnenction(conf); // Json타입으로 응답값이 넘어온다
         System.out.println("datas : " + response);
 

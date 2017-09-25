@@ -10,6 +10,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -57,14 +58,18 @@ public class PreTestMainActivity extends AppCompatActivity{
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.search_result_swipe_refresh_layout);
 
         mAdapter = new RelatedListAdapter(releateValueList);
-        mAdapter.setClickListener(new RelatedListAdapter.ListItemClickListener() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(String keyword) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ListView listView = (ListView) parent;
+                ContentsValues item = (ContentsValues)listView.getItemAtPosition(position);
+                String keyword = item.getTitie();
                 loadHeaderData(keyword);
                 loadListData(keyword);
                 search_view.setText(keyword);
             }
         });
+
         listView.setAdapter(mAdapter);
 
         header = getLayoutInflater().inflate(R.layout.listview_header,null,false);

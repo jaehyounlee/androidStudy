@@ -25,12 +25,11 @@ public class ImageLoader extends AsyncTask {
         imgView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View v) {
-                System.out.println("Attach ");
+
             }
 
             @Override
             public void onViewDetachedFromWindow(View v) {
-                System.out.println("Detach ");
                 ImageLoader.this.imageUrl = null;
                 ImageLoader.this.imgView = null;
             }
