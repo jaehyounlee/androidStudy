@@ -1,0 +1,29 @@
+<resources>
+    <!-- 공통 -->
+    <string name="app_name">HellowAndroid</string>
+    <string name="yes">예</string>
+    <string name="no">아니오</string>
+
+    <!-- Main -->
+    <string name="login">로그인</string>
+
+    <!-- 메세지 -->
+    <string name="alert">안내</string>
+    <string name="loginMsg">로그인이 되었습니다. 리스트화면으로 이동하실래요?</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+    <string name="weatherkey">5e7c383a04feed273a824e57320bdf32</string>
+    <string name="seoul">1835848</string>
+    <string name="weatherapi">http://api.openweathermap.org/data/2.5/weather</string>
+
+    <string-array name="cities">
+        <item>SEOUL</item>
+        <item>JEJU</item>
+        <item>BUSAN</item>
+        <item>DAEGU</item>
+    </string-array>
+
+</resources>
