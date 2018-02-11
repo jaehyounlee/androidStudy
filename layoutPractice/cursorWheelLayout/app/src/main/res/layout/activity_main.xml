@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.jaehyoun.cursurwheellayout.MainActivity">
+
+    <github.hellocsl.cursorwheel.CursorWheelLayout
+        android:layout_centerHorizontal="true"
+        android:id="@+id/wheel_text"
+        android:layout_width="280dip"
+        android:layout_height="280dip"
+        app:wheelCursorColor="#009688"
+        app:wheelCursorHeight="19dip"
+        app:wheelSelectedAngle="270"
+        >
+        <TextView
+            style="@style/TextAppearance.AppCompat.Large.Inverse"
+            android:id="@+id/wheel_menu_center_item"
+            android:text="text Wheel"
+            android:textColor="#009688"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </github.hellocsl.cursorwheel.CursorWheelLayout>
+
+    <github.hellocsl.cursorwheel.CursorWheelLayout
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/wheel_text"
+        android:id="@+id/wheel_image"
+        android:layout_width="280dip"
+        android:layout_height="280dip"
+        app:wheelCursorColor="#009688"
+        app:wheelCursorHeight="19dip"
+        app:wheelSelectedAngle="270"
+        >
+        <TextView
+            style="@style/TextAppearance.AppCompat.Large.Inverse"
+            android:id="@id/wheel_menu_center_item"
+            android:text="image Wheel"
+            android:textColor="#009688"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </github.hellocsl.cursorwheel.CursorWheelLayout>
+</RelativeLayout>
